@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+
+import cx from "classnames"
+
 import Board from '../Board/Board';
-import Counter from '../Counter/Counter';
+import Header from '../Header/Header';
 
 import styles from "./Game.module.scss"
 
@@ -35,8 +38,8 @@ const Game = () => {
 
   return (
     <div className={styles.game}>
-      <div className={styles.wrapper}>
-        <Counter
+      <div className={cx(styles.wrapper, "outer-wrapper")}>
+        <Header
           numMines={numMines}
           elapsedTime={elapsedTime}
           handleRestart={handleRestart}

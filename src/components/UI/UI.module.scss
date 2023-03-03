@@ -8,3 +8,89 @@
     background-color: black;
   }
 }
+
+.smile {
+  & {
+    display: block;
+    position: relative;
+    background-image: url("../../static/images/sprites.png");
+    width: 26px;
+    height: 26px;
+    background-color: black;
+  }
+
+  &[data-type="smile"] {
+    background-position: -11px -35px;
+  }
+  &[data-type="smile-active"] {
+    background-position: -38px -35px;
+  }
+  &[data-type="scared"] {
+    background-position: -65px -35px;
+  }
+  &[data-type="win"] {
+    background-position: -92px -35px;
+  }
+  &[data-type="lose"] {
+    background-position: -119px -35px;
+  }
+}
+.cellView {
+  & {
+    display: block;
+    position: relative;
+    background-image: url("../../static/images/sprites.png");
+    width: 16px;
+    height: 16px;
+    background-color: black;
+  }
+
+  &[data-type="hidden"] {
+    background-position: -11px -62px;
+  }
+  &[data-type="open"] {
+    background-position: -28px -62px;
+  }
+  &[data-type="flag"] {
+    background-position: -45px -62px;
+  }
+  &[data-type="?"] {
+    background-position: -62px -62px;
+  }
+  &[data-type="open?"] {
+    background-position: -79px -62px;
+  }
+  &[data-type="bomb"] {
+    background-position: -96px -62px;
+  }
+  &[data-type="bomb-red"] {
+    background-position: -113px -62px;
+  }
+  &[data-type="bomb-crossed"] {
+    background-position: -130px -62px;
+  }
+  &[data-type="1"] {
+    background-position: -11px -79px;
+  }
+  &[data-type="2"] {
+    background-position: -28px -79px;
+  }
+  &[data-type="3"] {
+    background-position: -45px -79px;
+  }
+  &[data-type="4"] {
+    background-position: -62px -79px;
+  }
+  &[data-type="5"] {
+    background-position: -79px -79px;
+  }
+  &[data-type="6"] {
+    background-position: -96px -79px;
+  }
+  &[data-type="7"] {
+    background-position: -113px -79px;
+  }
+  &[data-type="8"] {
+    background-position: -130px -79px;
+  }
+}

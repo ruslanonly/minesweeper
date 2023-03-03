@@ -1,17 +1,11 @@
 .wrapper {
   display: flex;
-  height: 40px;
-  margin-bottom: 5px;
+  align-items: center;
   justify-content: space-between;
+  padding: 5px;
 }
 
-.mine-count {
-  & {
-    
-  }
-}
-
-.elapsed-time {
+.counter-wrapper {
   & {
     display: flex; 
   }

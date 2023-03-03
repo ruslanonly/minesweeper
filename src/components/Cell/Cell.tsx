@@ -1,5 +1,6 @@
-import React from 'react'
-import Digit from '../UI/Digit';
+import React from "react"
+
+import CellView, { CellViewType } from '../UI/CellView';
 
 import styles from "./Cell.module.scss"
 
@@ -18,9 +19,18 @@ type CellProps = CellAttributes & {
 }
 
 export default function Cell(props: CellProps) {
+  const cellType: CellViewType = "hidden"
+
+  const onClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault()
+    const mouseButton = event.nativeEvent.which
+    if (mouseButton === 1) props.onClick(props.x, props.y)
+    else if (mouseButton === 3) props.onRightClick(props.x, props.y)
+  }
+
   return (
-    <div className={styles.block}>
-      {/* <Digit value={props.count}/> */}
-    </div>
+    <button onMouseDown={onClick} className={styles.block}>
+      <CellView type={cellType}/>
+    </button>
   )
 }

@@ -7,7 +7,10 @@ type DigitProps = {
 }
 
 export default function Digit(props: DigitProps) {
-  const xPosititon = 14 * props.value + 11
+  let mlp
+  if (props.value === 0) mlp = 9
+  else mlp = props.value - 1
+  const xPosititon = 14 * (mlp) + 11
   return (
     <div 
     style={{
