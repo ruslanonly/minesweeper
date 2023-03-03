@@ -1,0 +1,10 @@
+.digit {
+  & {
+    display: block;
+    position: relative;
+    background-image: url("../../static/images/sprites.png");
+    width: 13px;
+    height: 23px;
+    background-color: black;
+  }
+}
