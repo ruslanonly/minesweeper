@@ -50,11 +50,12 @@ const createBoard = (size: number, numMines: number, firstX: number = -1, firstY
   while(countCreated < numMines) {
     let x = Math.floor(Math.random() * size);
     let y = Math.floor(Math.random() * size);
-    while (board[x][y].isMine || (x === firstY && y === firstY)) {
+    while (board[y][x].isMine || (x === firstX && y === firstY)) {
+      if (x === firstX && y === firstY)
       x = Math.floor(Math.random() * size);
       y = Math.floor(Math.random() * size);
     }
-    board[x][y].isMine = true;
+    board[y][x].isMine = true;
     countCreated++
   }
 
@@ -66,7 +67,45 @@ const createBoard = (size: number, numMines: number, firstX: number = -1, firstY
   }
 
   return board
+}
 
+const getCellsToOpen = (board: CellAttributes[][], cell: CellAttributes) => {
+  const size = board.length
+  const cells: CellAttributes[] = [];
+  for (let i = Math.max(0, cell.y - 1); i <= Math.min(size - 1, cell.y + 1); i++) {
+    for (let j = Math.max(0, cell.x - 1); j <= Math.min(size - 1, cell.x + 1); j++) {
+      const neighbor = board[i][j];
+      if (!neighbor.isMine && !neighbor.isOpen) {
+        cells.push(neighbor);
+      }
+    }
+  }
+  return cells;
+};
+
+const openCell = (board: CellAttributes[][], clickedCell: CellAttributes, handleLose: () => void) => {
+  let curBoard = board
+  const _openCell = (cell: CellAttributes) => {
+    if (cell.isOpen) {
+      return;
+    }
+    const newBoard = [...board];
+    newBoard[cell.y][cell.x].isOpen = true;
+    curBoard = newBoard
+    if (cell.isMine) {
+      handleLose();
+      return;
+    }
+    if (cell.count === 0) {
+      const cellsToOpen = getCellsToOpen(curBoard, cell);
+      cellsToOpen.forEach((cellToOpen) => {
+        _openCell(cellToOpen);
+      });
+    }
+  };
+
+  _openCell(clickedCell)
+  return curBoard
 }
 
 const openAllMines = (board: CellAttributes[][]) => {
@@ -120,44 +159,15 @@ const Board = (props: BoardProps) => {
     }
   }, [props.firstMove])
 
-  const getCellsToOpen = (board: CellAttributes[][], cell: CellAttributes) => {
-    const cells: CellAttributes[] = [];
-    for (let i = Math.max(0, cell.y - 1); i <= Math.min(size - 1, cell.y + 1); i++) {
-      for (let j = Math.max(0, cell.x - 1); j <= Math.min(size - 1, cell.x + 1); j++) {
-        const neighbor = board[i][j];
-        if (!neighbor.isMine && !neighbor.isOpen) {
-          cells.push(neighbor);
-        }
-      }
-    }
-    return cells;
-  };
-
-  const openCell = (board: CellAttributes[][], clickedCell: CellAttributes, handleLose: () => void) => {
-    let curBoard = board
-    const _openCell = (cell: CellAttributes) => {
-      if (cell.isOpen) {
-        return;
-      }
-      const newBoard = [...board];
-      newBoard[cell.y][cell.x].isOpen = true;
-      curBoard = newBoard
-      if (cell.isMine) {
-        handleLose();
-        return;
-      }
-      if (cell.count === 0) {
-        const cellsToOpen = getCellsToOpen(curBoard, cell);
-        cellsToOpen.forEach((cellToOpen) => {
-          _openCell(cellToOpen);
-        });
-      }
-    };
-
-    _openCell(clickedCell)
-    return curBoard
+  const handleFirstMove = (x: number, y: number) => {
+    let newBoard = [...board]
+    props.handleStart()
+    newBoard = createBoard(size, numMines, x, y)
+    newBoard = openCell(newBoard, newBoard[y][x], handleLose)
+    setBoard(newBoard)
   }
 
+<<<<<<< Updated upstream
 
 
   const handleCellClick = (x: number, y: number) => {
@@ -169,12 +179,20 @@ const Board = (props: BoardProps) => {
       newBoard = createBoard(size, numMines, x, y)
       newBoard = openCell(newBoard, newBoard[y][x], handleLose)
       setBoard(newBoard)
+=======
+
+  const handleCellClick = (x: number, y: number) => {
+    if (props.firstMove) {
+      handleFirstMove(x, y)
+>>>>>>> Stashed changes
       return
     }
 
     if (board[y][x].isFlagged || board[y][x].isOpen || gameOver) {
       return;
     }
+
+    let newBoard = [...board]
 
     dispatch(setLastClicked({x, y}))
 

@@ -35,8 +35,7 @@ export default function Cell(props: CellProps) {
       cellType = "mine"
       if (gameOver && props.x == lastClicked.x && props.y == lastClicked.y) cellType ="mine-red"
     }
-  } 
-  else if (isQuestion) {
+  } else if (isQuestion) {
     cellType = "?"
   } else if (isFlagged) {
     cellType = "flagged";
