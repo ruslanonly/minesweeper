@@ -7,7 +7,7 @@ import Digit from '../UI/Digit';
 import styles from "./Header.module.scss"
 import Smile from '../UI/Smile';
 import { useAppDispatch, useAppSelector } from '../../app/store';
-import { setSmile } from '../../app/minesweeperSlice';
+import { setSmile, SmileType } from '../../app/minesweeperSlice';
 
 type CounterProps = {
   time: number
@@ -36,6 +36,10 @@ const Header = (props: HeaderProps) => {
   const dispatch = useAppDispatch()
   const minesweeper = useAppSelector(state => state.minesweeper)
 
+  let smileType: SmileType = minesweeper.smile
+  if (minesweeper.result === "win") smileType = "win"
+  else if (minesweeper.result === "lose") smileType = "lose"
+
   return (
     <div className={cx(styles.wrapper, "inner-wrapper")}>
       <Counter time={minesweeper.numMines}/>
@@ -44,7 +48,7 @@ const Header = (props: HeaderProps) => {
       onMouseDown={() => dispatch(setSmile('smile-active'))}
       onMouseUp={() => dispatch(setSmile('smile'))}
       onClick={props.handleRestart}>
-        <Smile type={minesweeper.smile}/>
+        <Smile type={smileType}/>
       </button>
       <Counter time={minesweeper.elapsedTime}/>
     </div>

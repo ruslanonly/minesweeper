@@ -6,45 +6,47 @@ import Board from '../Board/Board';
 import Header from '../Header/Header';
 
 import styles from "./Game.module.scss"
-import { BASE_CONFIG, incElapsedTime, reset, SmileType } from '../../app/minesweeperSlice';
-import { useAppDispatch } from '../../app/store';
+import { BASE_CONFIG, incElapsedTime, reset, setGameOver, setResult, setSmile, SmileType } from '../../app/minesweeperSlice';
+import { useAppDispatch, useAppSelector } from '../../app/store';
 
 const Game = () => {
   const dispatch = useAppDispatch()
+  const minesweeper = useAppSelector(state => state.minesweeper)
 
-  const [gameOver, setGameOver] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
+  const [firstMove, setFirstMove] = useState(false);
 
   let intervalId = useRef<NodeJS.Timer>()
   
   useEffect(() => {
-    if (gameStarted) {
+    if (firstMove) {
       intervalId.current = setInterval(() => {
         dispatch(incElapsedTime())
       }, 1000);
     }
-    if (gameOver) {
+    if (minesweeper.gameOver) {
       clearInterval(intervalId.current)
     }
     return () => clearInterval(intervalId.current)
-  }, [gameOver, gameStarted]);
+  }, [minesweeper.gameOver, firstMove]);
 
   const handleStart = () => {
-    setGameStarted(true)
+    setFirstMove(true)
   }
 
   const handleRestart = () => {
-    setGameOver(false);
-    setGameStarted(false)
+    dispatch(setGameOver(false))
+    setFirstMove(false)
     dispatch(reset())
   };
 
   const handleWin = () => {
-    setGameOver(true);
+    dispatch(setGameOver(true))
+    dispatch(setResult("win"))
   };
 
   const handleLose = () => {
-    setGameOver(true);
+    dispatch(setGameOver(true))
+    dispatch(setResult("lose"))
   };
 
   return (  
@@ -55,8 +57,7 @@ const Game = () => {
         />
         <Board
           size={BASE_CONFIG.boardSize}
-          gameOver={gameOver}
-          gameStarted={gameStarted}
+          firstMove={firstMove}
           handleStart={handleStart}
           handleWin={handleWin}
           handleLose={handleLose}

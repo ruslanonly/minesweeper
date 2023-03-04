@@ -23,7 +23,7 @@ type CellProps = CellAttributes & {
 
 export default function Cell(props: CellProps) {
   const dispatch = useAppDispatch()
-  const minesweeper = useAppSelector(state => state.minesweeper)
+  const { gameOver, lastClicked} = useAppSelector(state => state.minesweeper)
 
   const { isOpen, isMine, isFlagged, count, isQuestion } = props
 
@@ -33,6 +33,7 @@ export default function Cell(props: CellProps) {
     cellType = "open";
     if (isMine) {
       cellType = "mine"
+      if (gameOver && props.x == lastClicked.x && props.y == lastClicked.y) cellType ="mine-red"
     }
   } 
   else if (isQuestion) {
@@ -46,6 +47,7 @@ export default function Cell(props: CellProps) {
     event.preventDefault()
     const mouseButton = event.nativeEvent.which
     if (mouseButton === 1) { 
+      if (!gameOver)
       dispatch(setSmile('scared'))
       props.onClick(props.x, props.y)
     }

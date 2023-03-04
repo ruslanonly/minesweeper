@@ -1,27 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import cx from "classnames";
 
 import Cell, { CellAttributes } from "../Cell/Cell";
 
 import styles from "./Board.module.scss"
 import { useAppDispatch, useAppSelector } from "../../app/store";
-import { setNumMines } from "../../app/minesweeperSlice";
+import { BASE_CONFIG, setLastClicked, setNumMines } from "../../app/minesweeperSlice";
 
 type BoardProps = {
   size: number,
-  gameOver: boolean,
-  gameStarted: boolean,
+  firstMove: boolean,
   handleStart: () => void,
   handleWin: () => void,
   handleLose: () => void,
 }
 
-type RandomizeOptions = {
-  includeX?: number,
-  includeY?: number
-}
+const getAdjacentMines = (board: CellAttributes[][], x: number, y: number) => {
+  let size = board.length
+  let count = 0;
+  for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, size - 1); i++) {
+    for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, size - 1); j++) {
+      if (board[i][j].isMine) {
+        count++;
+      }
+    }
+  }
+  return count;
+};
 
-const createBoard = (size: number, numMines: number, randomizeOptions: RandomizeOptions = {}) => {
+const createBoard = (size: number, numMines: number, firstX: number = -1, firstY: number = -1) => {
   let board: CellAttributes[][] = [];
   for (let i = 0; i < size; i++) {
     let row = [];
@@ -43,46 +50,77 @@ const createBoard = (size: number, numMines: number, randomizeOptions: Randomize
   while(countCreated < numMines) {
     let x = Math.floor(Math.random() * size);
     let y = Math.floor(Math.random() * size);
-    while (board[x][y].isMine && x === randomizeOptions.includeX && y === randomizeOptions.includeY) {
+    while (board[x][y].isMine || (x === firstY && y === firstY)) {
       x = Math.floor(Math.random() * size);
       y = Math.floor(Math.random() * size);
     }
     board[x][y].isMine = true;
     countCreated++
-    for (let j = Math.max(0, y - 1); j <= Math.min(size - 1, y + 1); j++) {
-      for (let k = Math.max(0, x - 1); k <= Math.min(size - 1, x + 1); k++) {
-        if (!board[j][k].isMine) {
-          board[j][k].count++;
-        }
-      }
+  }
+
+
+  for (let j = 0; j < size; j++) {
+    for (let k = 0; k < size; k++) {
+      board[j][k].count = getAdjacentMines(board, j, k);
     }
   }
+
   return board
 
 }
 
+const openAllMines = (board: CellAttributes[][]) => {
+  const newBoard = [...board]
+  newBoard.forEach(row =>
+    row.forEach(cell => {
+      if (cell.isMine) {
+        cell.isOpen = true;
+      }
+    })
+  );
+  return newBoard
+}
+
 const Board = (props: BoardProps) => {
   const dispatch = useAppDispatch()
-  const { size, gameOver, handleLose, handleWin } = props
+  const { size,  handleLose, handleWin } = props
 
-  const { numMines } = useAppSelector(state => state.minesweeper)
+  const { numMines, gameOver } = useAppSelector(state => state.minesweeper)
 
   const [board, setBoard] = useState<CellAttributes[][]>([]);
-  const [flags, setFlags] = useState(0);
+
+  const won = useMemo(() => {
+    if (props.firstMove && !gameOver) {
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          const cell = board[i][j]
+          if (!cell.isMine && !cell.isOpen) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+  }, [board, props.firstMove])
+
+  if (won) {
+    handleWin()
+    setBoard(openAllMines(board))
+  }
 
   useEffect(() => {
-    const newBoard = createBoard(size, numMines);
+    const newBoard = createBoard(size, BASE_CONFIG.numMines);
     setBoard(newBoard);
-  }, [size, numMines]);
+  }, []);
 
   useEffect(() => {
-    if (!props.gameStarted) {
+    if (!props.firstMove) {
     let b = createBoard(size, 0)
       setBoard(b)
     }
-  }, [props.gameStarted])
+  }, [props.firstMove])
 
-  const getCellsToOpen = (cell: CellAttributes) => {
+  const getCellsToOpen = (board: CellAttributes[][], cell: CellAttributes) => {
     const cells: CellAttributes[] = [];
     for (let i = Math.max(0, cell.y - 1); i <= Math.min(size - 1, cell.y + 1); i++) {
       for (let j = Math.max(0, cell.x - 1); j <= Math.min(size - 1, cell.x + 1); j++) {
@@ -95,65 +133,61 @@ const Board = (props: BoardProps) => {
     return cells;
   };
 
-  const openCell = (cell: CellAttributes) => {
-    if (cell.isOpen) {
-      return;
-    }
-    const newBoard = [...board];
-    newBoard[cell.y][cell.x].isOpen = true;
-    setBoard(newBoard);
-    if (cell.isMine) {
-      handleLose();
-      return;
-    }
-    if (cell.count === 0) {
-      const cellsToOpen = getCellsToOpen(cell);
-      cellsToOpen.forEach((cellToOpen) => {
-        openCell(cellToOpen);
-      });
-    }
-  };
-
-  const getAdjacentMines = (x: number, y: number) => {
-    let count = 0;
-    for (let i = Math.max(x - 1, 0); i <= Math.min(x + 1, size - 1); i++) {
-      for (let j = Math.max(y - 1, 0); j <= Math.min(y + 1, size - 1); j++) {
-        if (board[i][j].isMine) {
-          count++;
-        }
+  const openCell = (board: CellAttributes[][], clickedCell: CellAttributes, handleLose: () => void) => {
+    let curBoard = board
+    const _openCell = (cell: CellAttributes) => {
+      if (cell.isOpen) {
+        return;
       }
-    }
-    return count;
-  };
+      const newBoard = [...board];
+      newBoard[cell.y][cell.x].isOpen = true;
+      curBoard = newBoard
+      if (cell.isMine) {
+        handleLose();
+        return;
+      }
+      if (cell.count === 0) {
+        const cellsToOpen = getCellsToOpen(curBoard, cell);
+        cellsToOpen.forEach((cellToOpen) => {
+          _openCell(cellToOpen);
+        });
+      }
+    };
+
+    _openCell(clickedCell)
+    return curBoard
+  }
+
+
 
   const handleCellClick = (x: number, y: number) => {
+
     let newBoard = [...board]
 
-    if (!props.gameStarted) {
+    if (!props.firstMove) {
       props.handleStart()
-      newBoard = createBoard(size, numMines, {includeX: x, includeY: y})
+      newBoard = createBoard(size, numMines, x, y)
+      newBoard = openCell(newBoard, newBoard[y][x], handleLose)
+      setBoard(newBoard)
+      return
     }
 
     if (board[y][x].isFlagged || board[y][x].isOpen || gameOver) {
       return;
     }
 
+    dispatch(setLastClicked({x, y}))
+
     const cell = newBoard[y][x];
 
     if (cell.isMine) {
       handleLose();
-      newBoard.forEach(row =>
-        row.forEach(cell => {
-          if (cell.isMine) {
-            cell.isOpen = true;
-          }
-        })
-      );
+      newBoard = openAllMines(newBoard)
       setBoard(newBoard);
       return;
     }
 
-    openCell(cell)
+    newBoard = openCell(newBoard, cell, handleLose)
 
     setBoard(newBoard);
   };
@@ -167,16 +201,12 @@ const Board = (props: BoardProps) => {
       return;
     }
     if (cell.isFlagged) {
-      setFlags(flags - 1);
       dispatch(setNumMines(numMines + 1))
       board[y][x].isFlagged = false;
       board[y][x].isQuestion = true
     } else if (cell.isQuestion) {
-      setFlags(flags - 1);
-      dispatch(setNumMines(numMines + 1))
       board[y][x].isQuestion = false
     } else {
-      setFlags(flags + 1);
       dispatch(setNumMines(numMines - 1))
       board[y][x].isFlagged = true;
     }
