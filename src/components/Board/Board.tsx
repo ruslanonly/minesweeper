@@ -51,7 +51,6 @@ const createBoard = (size: number, numMines: number, firstX: number = -1, firstY
     let x = Math.floor(Math.random() * size);
     let y = Math.floor(Math.random() * size);
     while (board[y][x].isMine || (x === firstX && y === firstY)) {
-      if (x === firstX && y === firstY)
       x = Math.floor(Math.random() * size);
       y = Math.floor(Math.random() * size);
     }
@@ -129,7 +128,7 @@ const Board = (props: BoardProps) => {
   const [board, setBoard] = useState<CellAttributes[][]>([]);
 
   const won = useMemo(() => {
-    if (props.firstMove && !gameOver) {
+    if (!props.firstMove && !gameOver) {
       for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
           const cell = board[i][j]
@@ -153,7 +152,7 @@ const Board = (props: BoardProps) => {
   }, []);
 
   useEffect(() => {
-    if (!props.firstMove) {
+    if (props.firstMove) {
     let b = createBoard(size, 0)
       setBoard(b)
     }
@@ -167,27 +166,13 @@ const Board = (props: BoardProps) => {
     setBoard(newBoard)
   }
 
-<<<<<<< Updated upstream
-
-
-  const handleCellClick = (x: number, y: number) => {
-
-    let newBoard = [...board]
-
-    if (!props.firstMove) {
-      props.handleStart()
-      newBoard = createBoard(size, numMines, x, y)
-      newBoard = openCell(newBoard, newBoard[y][x], handleLose)
-      setBoard(newBoard)
-=======
 
   const handleCellClick = (x: number, y: number) => {
     if (props.firstMove) {
+      console.log('firstMove')
       handleFirstMove(x, y)
->>>>>>> Stashed changes
       return
     }
-
     if (board[y][x].isFlagged || board[y][x].isOpen || gameOver) {
       return;
     }

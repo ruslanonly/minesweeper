@@ -13,42 +13,35 @@ const Game = () => {
   const dispatch = useAppDispatch()
   const minesweeper = useAppSelector(state => state.minesweeper)
 
-  const [firstMove, setFirstMove] = useState(false);
+  const [firstMove, setFirstMove] = useState(true);
 
   let intervalId = useRef<NodeJS.Timer>()
-  
-  useEffect(() => {
-    if (firstMove) {
-      intervalId.current = setInterval(() => {
-        dispatch(incElapsedTime())
-      }, 1000);
-    }
-    if (minesweeper.gameOver) {
-      clearInterval(intervalId.current)
-    }
-    return () => clearInterval(intervalId.current)
-  }, [minesweeper.gameOver, firstMove]);
 
   const handleStart = () => {
-    setFirstMove(true)
+    setFirstMove(false)
+    intervalId.current = setInterval(() => {
+      dispatch(incElapsedTime())
+    }, 1000);
   }
 
   const handleRestart = () => {
     dispatch(setGameOver(false))
-    setFirstMove(false)
+    setFirstMove(true)
     dispatch(reset())
+    clearInterval(intervalId.current)
   };
 
   const handleWin = () => {
     dispatch(setGameOver(true))
     dispatch(setResult("win"))
+    clearInterval(intervalId.current)
   };
 
   const handleLose = () => {
     dispatch(setGameOver(true))
     dispatch(setResult("lose"))
+    clearInterval(intervalId.current)
   };
-
   return (  
     <div className={styles.game} onContextMenu={(e) => e.preventDefault()}>
       <div className={cx(styles.wrapper, "outer-wrapper")}>
