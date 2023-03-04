@@ -90,7 +90,7 @@ const Board = (props: BoardProps) => {
   const [board, setBoard] = useState<CellAttributes[][]>([]);
 
   const won = useMemo(() => {
-    if (props.firstMove && !gameOver) {
+    if (!props.firstMove && !gameOver) {
       for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
           const cell = board[i][j]
@@ -114,7 +114,7 @@ const Board = (props: BoardProps) => {
   }, []);
 
   useEffect(() => {
-    if (!props.firstMove) {
+    if (props.firstMove) {
     let b = createBoard(size, 0)
       setBoard(b)
     }
@@ -158,13 +158,11 @@ const Board = (props: BoardProps) => {
     return curBoard
   }
 
-
-
   const handleCellClick = (x: number, y: number) => {
 
     let newBoard = [...board]
 
-    if (!props.firstMove) {
+    if (props.firstMove) {
       props.handleStart()
       newBoard = createBoard(size, numMines, x, y)
       newBoard = openCell(newBoard, newBoard[y][x], handleLose)
