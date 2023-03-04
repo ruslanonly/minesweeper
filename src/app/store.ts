@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import gameSlice from "./gameSlice";
+import gameSlice from "./minesweeperSlice";
 
 // Slices
 
 
 const store = configureStore({
   reducer: {
-    game: gameSlice.reducer
+    minesweeper: gameSlice.reducer
   },
 })
 

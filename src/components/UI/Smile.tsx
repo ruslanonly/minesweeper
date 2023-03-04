@@ -1,8 +1,8 @@
 import React from 'react'
 
-import styles from "./UI.module.scss"
+import { SmileType } from '../../app/minesweeperSlice'
 
-export type SmileType = "smile" | "smile-active" | "scared" | "win" | "lose"
+import styles from "./UI.module.scss"
 
 type SmileProps = {
   type: SmileType

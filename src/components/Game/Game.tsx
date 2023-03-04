@@ -6,33 +6,21 @@ import Board from '../Board/Board';
 import Header from '../Header/Header';
 
 import styles from "./Game.module.scss"
-import { SmileType } from '../UI/Smile';
-
-type GameConfig = {
-  boardSize: number,
-  numMines: number
-}
-
-const BASE_CONFIG: GameConfig = {
-  boardSize: 16,
-  numMines: 40
-}
+import { BASE_CONFIG, incElapsedTime, reset, SmileType } from '../../app/minesweeperSlice';
+import { useAppDispatch } from '../../app/store';
 
 const Game = () => {
-  const [boardSize, setBoardSize] = useState(BASE_CONFIG.boardSize);
-  const [numMines, setNumMines] = useState(BASE_CONFIG.numMines);
-  const [gameOver, setGameOver] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
+  const dispatch = useAppDispatch()
 
-  const [smile, setSmile] = useState<SmileType>('smile')
+  const [gameOver, setGameOver] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
 
   let intervalId = useRef<NodeJS.Timer>()
   
   useEffect(() => {
     if (gameStarted) {
       intervalId.current = setInterval(() => {
-        setElapsedTime(elapsedTime => elapsedTime + 1);
+        dispatch(incElapsedTime())
       }, 1000);
     }
     if (gameOver) {
@@ -48,7 +36,7 @@ const Game = () => {
   const handleRestart = () => {
     setGameOver(false);
     setGameStarted(false)
-    setElapsedTime(0);
+    dispatch(reset())
   };
 
   const handleWin = () => {
@@ -63,23 +51,15 @@ const Game = () => {
     <div className={styles.game} onContextMenu={(e) => e.preventDefault()}>
       <div className={cx(styles.wrapper, "outer-wrapper")}>
         <Header
-          numMines={numMines}
-          elapsedTime={elapsedTime}
           handleRestart={handleRestart}
-          setSmileType={setSmile}
-          smile={smile}
         />
         <Board
-          size={boardSize}
-          numMines={numMines}
+          size={BASE_CONFIG.boardSize}
           gameOver={gameOver}
           gameStarted={gameStarted}
           handleStart={handleStart}
           handleWin={handleWin}
           handleLose={handleLose}
-          setElapsedTime={setElapsedTime}
-          setNumMines={setNumMines}
-          setSmileType={setSmile}
         />
         </div>
 

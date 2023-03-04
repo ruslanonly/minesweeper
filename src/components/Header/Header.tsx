@@ -5,7 +5,9 @@ import cx from "classnames"
 import Digit from '../UI/Digit';
 
 import styles from "./Header.module.scss"
-import Smile, { SmileType } from '../UI/Smile';
+import Smile from '../UI/Smile';
+import { useAppDispatch, useAppSelector } from '../../app/store';
+import { setSmile } from '../../app/minesweeperSlice';
 
 type CounterProps = {
   time: number
@@ -27,26 +29,24 @@ const Counter = (props: CounterProps) => {
 }
 
 type HeaderProps = {
-  smile: SmileType,
-  numMines: number,
-  elapsedTime: number,
   handleRestart: () => void,
-  setSmileType: React.Dispatch<React.SetStateAction<SmileType>>
 }
 
 const Header = (props: HeaderProps) => {
-  
+  const dispatch = useAppDispatch()
+  const minesweeper = useAppSelector(state => state.minesweeper)
+
   return (
     <div className={cx(styles.wrapper, "inner-wrapper")}>
-      <Counter time={props.numMines}/>
+      <Counter time={minesweeper.numMines}/>
       <button 
       className={styles.restart} 
-      onMouseDown={() => props.setSmileType('smile-active')}
-      onMouseUp={() => props.setSmileType('smile')}
+      onMouseDown={() => dispatch(setSmile('smile-active'))}
+      onMouseUp={() => dispatch(setSmile('smile'))}
       onClick={props.handleRestart}>
-        <Smile type={props.smile}/>
+        <Smile type={minesweeper.smile}/>
       </button>
-      <Counter time={props.elapsedTime}/>
+      <Counter time={minesweeper.elapsedTime}/>
     </div>
   );
 };

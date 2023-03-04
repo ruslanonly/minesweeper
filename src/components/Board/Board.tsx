@@ -4,24 +4,21 @@ import cx from "classnames";
 import Cell, { CellAttributes } from "../Cell/Cell";
 
 import styles from "./Board.module.scss"
-import { SmileType } from "../UI/Smile";
+import { useAppDispatch, useAppSelector } from "../../app/store";
+import { setNumMines } from "../../app/minesweeperSlice";
 
 type BoardProps = {
   size: number,
-  numMines: number,
   gameOver: boolean,
   gameStarted: boolean,
   handleStart: () => void,
   handleWin: () => void,
   handleLose: () => void,
-  setElapsedTime: React.Dispatch<React.SetStateAction<number>>
-  setNumMines: React.Dispatch<React.SetStateAction<number>>
-  setSmileType: React.Dispatch<React.SetStateAction<SmileType>>
 }
 
 type RandomizeOptions = {
-  excludeX?: number,
-  excludeY?: number
+  includeX?: number,
+  includeY?: number
 }
 
 const createBoard = (size: number, numMines: number, randomizeOptions: RandomizeOptions = {}) => {
@@ -46,7 +43,7 @@ const createBoard = (size: number, numMines: number, randomizeOptions: Randomize
   while(countCreated < numMines) {
     let x = Math.floor(Math.random() * size);
     let y = Math.floor(Math.random() * size);
-    while (board[x][y].isMine && x === randomizeOptions.excludeX && y === randomizeOptions.excludeY) {
+    while (board[x][y].isMine && x === randomizeOptions.includeX && y === randomizeOptions.includeY) {
       x = Math.floor(Math.random() * size);
       y = Math.floor(Math.random() * size);
     }
@@ -65,7 +62,10 @@ const createBoard = (size: number, numMines: number, randomizeOptions: Randomize
 }
 
 const Board = (props: BoardProps) => {
-  const { size, numMines, gameOver, handleLose, handleWin, setElapsedTime, setNumMines} = props
+  const dispatch = useAppDispatch()
+  const { size, gameOver, handleLose, handleWin } = props
+
+  const { numMines } = useAppSelector(state => state.minesweeper)
 
   const [board, setBoard] = useState<CellAttributes[][]>([]);
   const [flags, setFlags] = useState(0);
@@ -131,7 +131,7 @@ const Board = (props: BoardProps) => {
 
     if (!props.gameStarted) {
       props.handleStart()
-      newBoard = createBoard(size, numMines, {excludeX: x, excludeY: y})
+      newBoard = createBoard(size, numMines, {includeX: x, includeY: y})
     }
 
     if (board[y][x].isFlagged || board[y][x].isOpen || gameOver) {
@@ -168,16 +168,16 @@ const Board = (props: BoardProps) => {
     }
     if (cell.isFlagged) {
       setFlags(flags - 1);
-      setNumMines(numMines + 1);
+      dispatch(setNumMines(numMines + 1))
       board[y][x].isFlagged = false;
       board[y][x].isQuestion = true
     } else if (cell.isQuestion) {
       setFlags(flags - 1);
-      setNumMines(numMines + 1);
+      dispatch(setNumMines(numMines + 1))
       board[y][x].isQuestion = false
     } else {
       setFlags(flags + 1);
-      setNumMines(numMines - 1);
+      dispatch(setNumMines(numMines - 1))
       board[y][x].isFlagged = true;
     }
   };
