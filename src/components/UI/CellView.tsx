@@ -2,7 +2,7 @@ import React from 'react'
 
 import styles from "./UI.module.scss"
 
-export type CellViewType = "hidden" | "open" | "flag" | "?" | "open?" | "bomb" | "bomb-red" | "bomb-crossed" | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 
+export type CellViewType = "hidden" | "open" | "flagged" | "?" | "open?" | "mine" | "mine-red" | "mine-crossed" | number
 
 type CellViewProps = {
   type: CellViewType

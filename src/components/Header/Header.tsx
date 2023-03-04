@@ -27,24 +27,24 @@ const Counter = (props: CounterProps) => {
 }
 
 type HeaderProps = {
+  smile: SmileType,
   numMines: number,
   elapsedTime: number,
-  handleRestart: () => void
+  handleRestart: () => void,
+  setSmileType: React.Dispatch<React.SetStateAction<SmileType>>
 }
 
 const Header = (props: HeaderProps) => {
-  const [smile, setSmile] = useState<SmileType>('smile')
-
   
   return (
     <div className={cx(styles.wrapper, "inner-wrapper")}>
       <Counter time={props.numMines}/>
       <button 
       className={styles.restart} 
-      onMouseDown={() => setSmile('smile-active')}
-      onMouseUp={() => setSmile('smile')}
+      onMouseDown={() => props.setSmileType('smile-active')}
+      onMouseUp={() => props.setSmileType('smile')}
       onClick={props.handleRestart}>
-        <Smile type={smile}/>
+        <Smile type={props.smile}/>
       </button>
       <Counter time={props.elapsedTime}/>
     </div>

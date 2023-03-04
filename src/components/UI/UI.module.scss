@@ -51,7 +51,7 @@
   &[data-type="open"] {
     background-position: -28px -62px;
   }
-  &[data-type="flag"] {
+  &[data-type="flagged"] {
     background-position: -45px -62px;
   }
   &[data-type="?"] {
@@ -60,13 +60,13 @@
   &[data-type="open?"] {
     background-position: -79px -62px;
   }
-  &[data-type="bomb"] {
+  &[data-type="mine"] {
     background-position: -96px -62px;
   }
-  &[data-type="bomb-red"] {
+  &[data-type="mine-red"] {
     background-position: -113px -62px;
   }
-  &[data-type="bomb-crossed"] {
+  &[data-type="mine-crossed"] {
     background-position: -130px -62px;
   }
   &[data-type="1"] {

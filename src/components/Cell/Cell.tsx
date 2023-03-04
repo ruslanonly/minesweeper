@@ -10,6 +10,7 @@ export type CellAttributes = {
   isMine: boolean;
   isOpen: boolean;
   isFlagged: boolean;
+  isQuestion: boolean;
   count: number;
 }
 
@@ -19,7 +20,21 @@ type CellProps = CellAttributes & {
 }
 
 export default function Cell(props: CellProps) {
-  const cellType: CellViewType = "hidden"
+  const { isOpen, isMine, isFlagged, count, isQuestion } = props
+
+  let cellType: CellViewType = "hidden"
+
+  if (isOpen) {
+    cellType = "open";
+    if (isMine) {
+      cellType = "mine"
+    }
+  } 
+  else if (isQuestion) {
+    cellType = "?"
+  } else if (isFlagged) {
+    cellType = "flagged";
+  }
 
   const onClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault()
@@ -28,9 +43,14 @@ export default function Cell(props: CellProps) {
     else if (mouseButton === 3) props.onRightClick(props.x, props.y)
   }
 
+  const children = () => {
+    if (isOpen && !isMine && count > 0 && count < 9) return <CellView type={count}/>
+    else return <CellView type={cellType}/>
+  }
+
   return (
     <button onMouseDown={onClick} className={styles.block}>
-      <CellView type={cellType}/>
+      {children()}
     </button>
   )
 }
