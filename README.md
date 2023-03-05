@@ -17,7 +17,7 @@ Development Server
 ```
 npm run start 
 ```
-Or production Build
+Or production static server
 ```
 npm install
 npm run build
