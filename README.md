@@ -1,6 +1,6 @@
 # Getting Started
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [GitHub Pages MineSweeper](https://ruslanonly.github.io/minesweeper/)
 
 ## Available Scripts
 
@@ -17,7 +17,7 @@ Development Server
 ```
 npm run start 
 ```
-Production Build
+Or production Build
 ```
 npm install
 npm run build
