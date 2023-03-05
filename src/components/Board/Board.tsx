@@ -211,9 +211,10 @@ const Board = (props: BoardProps) => {
     } else if (cell.isQuestion) {
       board[y][x].isQuestion = false
     } else {
-      if (mines > 0)
-      dispatch(setMines(mines - 1))
-      board[y][x].isFlagged = true;
+      if (mines > 0) {
+        dispatch(setMines(mines - 1))
+        board[y][x].isFlagged = true;
+      }
     }
   };
 
