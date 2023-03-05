@@ -1,6 +1,6 @@
 # Getting Started
 
-Open [GitHub Pages MineSweeper](https://ruslanonly.github.io/minesweeper/)
+Try it [GitHub Pages MineSweeper](https://ruslanonly.github.io/minesweeper/)
 
 ## Available Scripts
 
@@ -17,7 +17,7 @@ Development Server
 ```
 npm run start 
 ```
-Or production Build
+Or production static server
 ```
 npm install
 npm run build
