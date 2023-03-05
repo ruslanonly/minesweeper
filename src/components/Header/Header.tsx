@@ -42,7 +42,7 @@ const Header = (props: HeaderProps) => {
 
   return (
     <div className={cx(styles.wrapper, "inner-wrapper")}>
-      <Counter time={minesweeper.numMines}/>
+      <Counter time={minesweeper.mines}/>
       <button 
       className={styles.restart} 
       onMouseDown={() => dispatch(setSmile('smile-active'))}

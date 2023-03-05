@@ -5,10 +5,11 @@ import Cell, { CellAttributes } from "../Cell/Cell";
 
 import styles from "./Board.module.scss"
 import { useAppDispatch, useAppSelector } from "../../app/store";
-import { BASE_CONFIG, setLastClicked, setNumMines } from "../../app/minesweeperSlice";
+import { setLastClicked, setMines } from "../../app/minesweeperSlice";
 
 type BoardProps = {
   size: number,
+  numMines: number,
   firstMove: boolean,
   handleStart: () => void,
   handleWin: () => void,
@@ -28,7 +29,7 @@ const getAdjacentMines = (board: CellAttributes[][], x: number, y: number) => {
   return count;
 };
 
-const createBoard = (size: number, numMines: number, firstX: number = -1, firstY: number = -1) => {
+const createBoard = (size: number, mines: number, firstX: number = -1, firstY: number = -1) => {
   let board: CellAttributes[][] = [];
   for (let i = 0; i < size; i++) {
     let row = [];
@@ -47,7 +48,7 @@ const createBoard = (size: number, numMines: number, firstX: number = -1, firstY
     board.push(row);
   }
   let countCreated = 0
-  while(countCreated < numMines) {
+  while(countCreated < mines) {
     let x = Math.floor(Math.random() * size);
     let y = Math.floor(Math.random() * size);
     while (board[y][x].isMine || (x === firstX && y === firstY)) {
@@ -123,7 +124,7 @@ const Board = (props: BoardProps) => {
   const dispatch = useAppDispatch()
   const { size,  handleLose, handleWin } = props
 
-  const { numMines, gameOver } = useAppSelector(state => state.minesweeper)
+  const { mines, gameOver } = useAppSelector(state => state.minesweeper)
 
   const [board, setBoard] = useState<CellAttributes[][]>([]);
 
@@ -147,7 +148,7 @@ const Board = (props: BoardProps) => {
   }
 
   useEffect(() => {
-    const newBoard = createBoard(size, BASE_CONFIG.numMines);
+    const newBoard = createBoard(size, props.numMines);
     setBoard(newBoard);
   }, []);
 
@@ -161,7 +162,7 @@ const Board = (props: BoardProps) => {
   const handleFirstMove = (x: number, y: number) => {
     let newBoard = [...board]
     props.handleStart()
-    newBoard = createBoard(size, numMines, x, y)
+    newBoard = createBoard(size, mines, x, y)
     newBoard = openCell(newBoard, newBoard[y][x], handleLose)
     setBoard(newBoard)
   }
@@ -204,13 +205,13 @@ const Board = (props: BoardProps) => {
       return;
     }
     if (cell.isFlagged) {
-      dispatch(setNumMines(numMines + 1))
+      dispatch(setMines(mines + 1))
       board[y][x].isFlagged = false;
       board[y][x].isQuestion = true
     } else if (cell.isQuestion) {
       board[y][x].isQuestion = false
     } else {
-      dispatch(setNumMines(numMines - 1))
+      dispatch(setMines(mines - 1))
       board[y][x].isFlagged = true;
     }
   };

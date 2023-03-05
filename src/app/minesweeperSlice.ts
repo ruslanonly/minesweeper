@@ -3,16 +3,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export type SmileType = "smile" | "smile-active" | "scared" | "win" | "lose"
 export type GameResultType = "win" | "lose" | undefined
 
-export const BASE_CONFIG = {
-  boardSize: 16,
-  numMines: 40
-}
-
 interface IMinesweeperState {
   smile: SmileType,
   result: GameResultType,
   gameOver: boolean,
-  numMines: number,
+  mines: number,
   elapsedTime: number,
   lastClicked: {
     x: number,
@@ -24,7 +19,7 @@ const initialState: IMinesweeperState = {
   smile: "smile",
   result: undefined,
   gameOver: false,
-  numMines: BASE_CONFIG.numMines,
+  mines: 0,
   elapsedTime: 0,
   lastClicked: {
     x: -1,
@@ -45,8 +40,8 @@ const minesweeperSlice = createSlice({
     setGameOver: (state, action: PayloadAction<boolean>) => {
       state.gameOver = action.payload
     },
-    setNumMines: (state, action: PayloadAction<number>) => {
-      state.numMines = action.payload
+    setMines: (state, action: PayloadAction<number>) => {
+      state.mines = action.payload
     },
     setLastClicked: (state, { payload }: PayloadAction<IMinesweeperState['lastClicked']>) => {
       state.lastClicked = {
@@ -58,7 +53,6 @@ const minesweeperSlice = createSlice({
       state.elapsedTime++
     },
     reset: (state) => {
-      state.numMines = BASE_CONFIG.numMines
       state.elapsedTime = 0
       state.smile = "smile"
       state.gameOver = false
@@ -71,7 +65,7 @@ const minesweeperSlice = createSlice({
 export const {
   setSmile,
   incElapsedTime,
-  setNumMines,
+  setMines,
   reset,
   setGameOver,
   setResult,

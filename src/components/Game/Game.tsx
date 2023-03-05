@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import cx from "classnames"
 
@@ -6,14 +6,22 @@ import Board from '../Board/Board';
 import Header from '../Header/Header';
 
 import styles from "./Game.module.scss"
-import { BASE_CONFIG, incElapsedTime, reset, setGameOver, setResult, setSmile, SmileType } from '../../app/minesweeperSlice';
-import { useAppDispatch, useAppSelector } from '../../app/store';
+import { incElapsedTime, reset, setGameOver, setMines, setResult, setSmile, SmileType } from '../../app/minesweeperSlice';
+import { useAppDispatch } from '../../app/store';
 
-const Game = () => {
+export type GameConfig = {
+  boardSize: number
+  numMines: number
+}
+
+const Game = (props: GameConfig) => {
   const dispatch = useAppDispatch()
-  const minesweeper = useAppSelector(state => state.minesweeper)
 
   const [firstMove, setFirstMove] = useState(true);
+
+  useLayoutEffect(() => {
+    dispatch(setMines(props.numMines))
+  }, [])
 
   let intervalId = useRef<NodeJS.Timer>()
 
@@ -29,6 +37,7 @@ const Game = () => {
     setFirstMove(true)
     dispatch(reset())
     clearInterval(intervalId.current)
+    dispatch(setMines(props.numMines))
   };
 
   const handleWin = () => {
@@ -49,7 +58,8 @@ const Game = () => {
           handleRestart={handleRestart}
         />
         <Board
-          size={BASE_CONFIG.boardSize}
+          size={props.boardSize}
+          numMines={props.numMines}
           firstMove={firstMove}
           handleStart={handleStart}
           handleWin={handleWin}
