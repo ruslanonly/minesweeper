@@ -197,7 +197,7 @@ const Board = (props: BoardProps) => {
   };
     
   const handleCellRightClick = (x: number, y: number) => {
-    if (gameOver) {
+    if (gameOver || props.firstMove) {
       return;
     }
     const cell = board[y][x];
