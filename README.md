@@ -1,6 +1,6 @@
 # Getting Started
 
-Open [GitHub Pages MineSweeper](https://ruslanonly.github.io/minesweeper/)
+Try it [GitHub Pages MineSweeper](https://ruslanonly.github.io/minesweeper/)
 
 ## Available Scripts
 
